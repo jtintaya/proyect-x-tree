@@ -4,6 +4,6 @@ using namespace std;
 
 int main()
 {
-    cout << "Hola Mundo con C++!" << endl;
+    cout << "Proyecto de métodos jerárquicos X-Tree (Árbol X)...!" << endl;
     return 0;
 }
