@@ -1,0 +1,110 @@
+class Cancion:
+    def __init__(self, titulo, artista):
+        self.titulo = titulo
+        self.artista = artista
+
+    def __str__(self):
+        return f"{self.titulo} - {self.artista}"
+
+class NodoX:
+    def __init__(self, tam_min):
+        self.tam_min = tam_min
+        self.claves = []
+        self.valores = []
+        self.hijos = []
+        self.es_hoja = True
+
+    def buscar_cancion(self, titulo):
+        i = 0
+        while i < len(self.claves) and titulo > self.claves[i]:
+            i += 1
+        if i < len(self.claves) and titulo == self.claves[i]:
+            return self.valores[i]
+        elif self.es_hoja:
+            return None
+        else:
+            return self.hijos[i].buscar_cancion(titulo)
+
+    def insertar_en_nodo(self, titulo, cancion):
+        i = 0
+        while i < len(self.claves) and titulo > self.claves[i]:
+            i += 1
+        self.claves.insert(i, titulo)
+        self.valores.insert(i, cancion)
+        if len(self.claves) == 2 * self.tam_min:
+            self.dividir()
+
+    def dividir(self):
+        nodo_derecho = NodoX(self.tam_min)
+        medio = len(self.claves) // 2
+        nodo_derecho.claves = self.claves[medio + 1:]
+        nodo_derecho.valores = self.valores[medio + 1:]
+        if not self.es_hoja:
+            nodo_derecho.hijos = self.hijos[medio + 1:]
+            self.hijos = self.hijos[:medio + 1]
+        self.claves = self.claves[:medio]
+        self.valores = self.valores[:medio]
+        self.es_hoja = False
+        self.hijos.insert(self.clave_en_padre(nodo_derecho.claves[0]), nodo_derecho)
+
+    def clave_en_padre(self, titulo):
+        i = 0
+        while i < len(self.claves) and titulo > self.claves[i]:
+            i += 1
+        return i
+
+    def imprimir(self, nivel=0):
+        print('  ' * nivel, end='')
+        print(', '.join(str(c) for c in self.claves))
+        if not self.es_hoja:
+            for hijo in self.hijos:
+                hijo.imprimir(nivel + 1)
+
+class ArbolX:
+    def __init__(self, tam_min):
+        self.raiz = NodoX(tam_min)
+
+    def buscar_cancion(self, titulo):
+        return self.raiz.buscar_cancion(titulo)
+
+    def insertar_cancion(self, cancion):
+        titulo = cancion.titulo
+        nodo_actual = self.raiz
+        while not nodo_actual.es_hoja:
+            i = 0
+            while i < len(nodo_actual.claves) and titulo > nodo_actual.claves[i]:
+                i += 1
+            nodo_actual = nodo_actual.hijos[i]
+        nodo_actual.insertar_en_nodo(titulo, cancion)
+
+    def imprimir(self):
+        self.raiz.imprimir()
+
+if __name__ == '__main__':
+    # crea un nuevo árbol x
+    arbol = ArbolX(3)
+
+    # crea algunas canciones
+    cancion1 = Cancion('Cancion 1', 'Artista 1')
+    cancion2 = Cancion('Cancion 2', 'Artista 2')
+    cancion3 = Cancion('Cancion 3', 'Artista 3')
+    cancion4 = Cancion('Cancion 4', 'Artista 4')
+    cancion5 = Cancion('Cancion 5', 'Artista 5')
+    cancion6 = Cancion('Cancion 6', 'Artista 6')
+
+    # inserta las canciones en el árbol
+    arbol.insertar_cancion(cancion1)
+    arbol.insertar_cancion(cancion2)
+    arbol.insertar_cancion(cancion3)
+    arbol.insertar_cancion(cancion4)
+    arbol.insertar_cancion(cancion5)
+    arbol.insertar_cancion(cancion6)
+
+    # busca una canción en el árbol
+    cancion = arbol.buscar_cancion('Cancion 2')
+    if cancion is not None:
+        print('Cancion:', cancion.titulo)
+        print('Artista:', cancion.artista)
+    else:
+        print('Cancion no encontrada')
+ 
